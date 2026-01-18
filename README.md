@@ -6,6 +6,7 @@ The purpose of this project is to manage tourism-related operations in a simple 
 ## Features
 - User can view tourism packages
 - User can manage bookings
+- Modern payment interface with multiple options.
 - Admin can manage tour details
 - Data stored using database
 - Simple and user-friendly interface
@@ -23,7 +24,7 @@ University Semester Project
 ## How to Run
 1. Open the project in Visual Studio
 2. Configure database connection in appsettings.json
-3. Run the project using IIS Express
+3. Run the project 
 
 ## Note
 This project was developed for learning and academic purposes.
