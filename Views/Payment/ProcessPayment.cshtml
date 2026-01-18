@@ -1,0 +1,808 @@
+﻿@model TourismManagementSystem.Models.ViewModels.PaymentVM
+@{
+    ViewData["Title"] = "Payment Gateway";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Gateway - Tourism Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:  linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .payment-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .payment-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align:  center;
+        }
+
+        .payment-header h1 {
+            font-size:  32px;
+            margin-bottom:  10px;
+        }
+
+        .payment-header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .booking-summary {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .summary-row:last-child {
+            border-bottom:  none;
+            padding-top: 20px;
+            margin-top: 10px;
+            border-top: 2px solid #667eea;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .summary-value {
+            color: #212529;
+            font-weight: 500;
+        }
+
+        .total-amount {
+            font-size: 28px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .payment-form {
+            padding: 40px;
+        }
+
+        . form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight:  bold;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom:  30px;
+        }
+
+        . payment-method {
+            position: relative;
+        }
+
+        .payment-method input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .payment-method label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            height: 100%;
+        }
+
+        .payment-method input[type="radio"]:checked + label {
+            border-color:  #667eea;
+            background: #f0f4ff;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102,126,234,0.3);
+        }
+
+        .payment-method label . icon {
+            font-size: 32px;
+            margin-bottom:  10px;
+        }
+
+        .payment-method label .name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+        }
+
+        .payment-details {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .payment-details.active {
+            display: block;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-label . required {
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size:  15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .form-control. invalid {
+            border-color: #dc3545;
+        }
+
+        .form-control.valid {
+            border-color: #28a745;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top:  5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding:  18px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border:  none;
+            border-radius:  50px;
+            font-size:  18px;
+            font-weight:  bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(40,167,69,0.4);
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover: not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow:  0 8px 30px rgba(40,167,69,0.6);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .back-btn {
+            width: 100%;
+            padding:  15px;
+            background: #6c757d;
+            color:  white;
+            border: none;
+            border-radius: 50px;
+            font-size:  16px;
+            font-weight: bold;
+            cursor:  pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        . back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .security-badge {
+            text-align: center;
+            padding: 20px;
+            background: #e7f3ff;
+            border-radius: 10px;
+            margin-top:  20px;
+        }
+
+        . security-badge . icon {
+            font-size: 24px;
+            margin-bottom:  10px;
+        }
+
+        .security-badge p {
+            color: #0056b3;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <!-- HEADER -->
+        <div class="payment-header">
+            <h1>💳 Secure Payment Gateway</h1>
+            <p>Complete your booking payment</p>
+        </div>
+
+        <!-- BOOKING SUMMARY -->
+        <div class="booking-summary">
+            <div class="summary-row">
+                <span class="summary-label">📦 Package:</span>
+                <span class="summary-value">@Model.PackageType</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">📍 Destination:</span>
+                <span class="summary-value">@Model.DestinationName</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">👤 Booking For:</span>
+                <span class="summary-value">@Model.UserName (@Model.UserEmail)</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">💰 Total Amount:</span>
+                <span class="summary-value total-amount">₨@Model.TotalAmount.ToString("N2")</span>
+            </div>
+        </div>
+
+        <!-- PAYMENT FORM -->
+        <form asp-controller="Payment" asp-action="ConfirmPayment" method="post" class="payment-form" id="paymentForm">
+            <input type="hidden" asp-for="PackageId" />
+            <input type="hidden" asp-for="TotalAmount" />
+            <input type="hidden" asp-for="UserId" />
+            <input type="hidden" asp-for="UserName" />
+            <input type="hidden" asp-for="UserEmail" />
+            <input type="hidden" asp-for="DestinationName" />
+
+            <!-- PAYMENT METHOD SELECTION -->
+            <div class="form-section">
+                <div class="section-title">
+                    💳 Select Payment Method
+                </div>
+
+                <div class="payment-methods">
+                    <!-- Credit/Debit Card -->
+                    <div class="payment-method">
+                        <input type="radio" id="card" name="PaymentMethod" value="Credit/Debit Card" required>
+                        <label for="card">
+                            <span class="icon">💳</span>
+                            <span class="name">Credit/Debit Card</span>
+                        </label>
+                    </div>
+
+                    <!-- JazzCash -->
+                    <div class="payment-method">
+                        <input type="radio" id="jazzcash" name="PaymentMethod" value="JazzCash">
+                        <label for="jazzcash">
+                            <span class="icon">📱</span>
+                            <span class="name">JazzCash</span>
+                        </label>
+                    </div>
+
+                    <!-- Easypaisa -->
+                    <div class="payment-method">
+                        <input type="radio" id="easypaisa" name="PaymentMethod" value="Easypaisa">
+                        <label for="easypaisa">
+                            <span class="icon">📲</span>
+                            <span class="name">Easypaisa</span>
+                        </label>
+                    </div>
+
+                    <!-- Bank Transfer -->
+                    <div class="payment-method">
+                        <input type="radio" id="bank" name="PaymentMethod" value="Bank Transfer">
+                        <label for="bank">
+                            <span class="icon">🏦</span>
+                            <span class="name">Bank Transfer</span>
+                        </label>
+                    </div>
+
+                    <!-- Cash on Arrival -->
+                    <div class="payment-method">
+                        <input type="radio" id="cash" name="PaymentMethod" value="Cash on Arrival">
+                        <label for="cash">
+                            <span class="icon">💵</span>
+                            <span class="name">Cash on Arrival</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD DETAILS -->
+            <div id="cardDetails" class="payment-details">
+                <div class="section-title">💳 Card Details</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Cardholder Name <span class="required">*</span></label>
+                    <input type="text" id="cardHolderName" asp-for="CardHolderName" class="form-control" placeholder="JOHN DOE" maxlength="50">
+                    <span class="error-message" id="cardHolderNameError">Please enter valid cardholder name (letters only)</span>
+                    <div class="input-hint">Enter name as written on card</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Card Number <span class="required">*</span></label>
+                    <input type="text" id="cardNumber" asp-for="CardNumber" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
+                    <span class="error-message" id="cardNumberError">Card number must be 16 digits</span>
+                    <div class="input-hint">Enter 16-digit card number</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Expiry Date <span class="required">*</span></label>
+                        <input type="text" id="expiryDate" asp-for="ExpiryDate" class="form-control" placeholder="MM/YY" maxlength="5">
+                        <span class="error-message" id="expiryDateError">Invalid expiry date or card expired</span>
+                        <div class="input-hint">Format: MM/YY</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">CVV <span class="required">*</span></label>
+                        <input type="password" id="cvv" asp-for="CVV" class="form-control" placeholder="123" maxlength="3">
+                        <span class="error-message" id="cvvError">CVV must be 3 digits</span>
+                        <div class="input-hint">3-digit code on back</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOBILE WALLET DETAILS -->
+            <div id="walletDetails" class="payment-details">
+                <div class="section-title">📱 Mobile Wallet Details</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mobile Number <span class="required">*</span></label>
+                    <input type="text" id="mobileNumber" asp-for="MobileNumber" class="form-control" placeholder="03XX-XXXXXXX" maxlength="12">
+                    <span class="error-message" id="mobileNumberError">Invalid Pakistani mobile number</span>
+                    <div class="input-hint">Format: 03XX-XXXXXXX (Pakistani number)</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Wallet PIN <span class="required">*</span></label>
+                    <input type="password" id="walletPin" asp-for="WalletPin" class="form-control" placeholder="Enter 5-digit PIN" maxlength="5">
+                    <span class="error-message" id="walletPinError">PIN must be exactly 5 digits</span>
+                    <div class="input-hint">Enter your 5-digit wallet PIN</div>
+                </div>
+            </div>
+
+            <!-- BANK TRANSFER DETAILS -->
+            <div id="bankDetails" class="payment-details">
+                <div class="section-title">🏦 Bank Transfer Details</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Select Bank <span class="required">*</span></label>
+                    <select id="bankName" asp-for="BankName" class="form-control">
+                        <option value="">-- Choose Bank --</option>
+                        <option value="HBL">Habib Bank Limited (HBL)</option>
+                        <option value="UBL">United Bank Limited (UBL)</option>
+                        <option value="MCB">MCB Bank</option>
+                        <option value="Allied">Allied Bank</option>
+                        <option value="Meezan">Meezan Bank</option>
+                        <option value="BankAlfalah">Bank Alfalah</option>
+                        <option value="Faysal">Faysal Bank</option>
+                        <option value="Standard">Standard Chartered</option>
+                    </select>
+                    <span class="error-message" id="bankNameError">Please select a bank</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Account Number <span class="required">*</span></label>
+                    <input type="text" id="accountNumber" asp-for="AccountNumber" class="form-control" placeholder="Enter your account number" maxlength="20">
+                    <span class="error-message" id="accountNumberError">Account number must be 10-20 digits</span>
+                    <div class="input-hint">Enter 10-20 digit account number</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Transaction Reference (Optional)</label>
+                    <input type="text" id="transactionReference" asp-for="TransactionReference" class="form-control" placeholder="Enter transaction ID if already transferred" maxlength="30">
+                    <div class="input-hint">Optional:  If you've already transferred funds</div>
+                </div>
+            </div>
+
+            <!-- CASH ON ARRIVAL MESSAGE -->
+            <div id="cashDetails" class="payment-details">
+                <div class="security-badge">
+                    <div class="icon">💵</div>
+                    <p>You have selected Cash on Arrival</p>
+                    <p style="margin-top: 10px; font-size: 13px; font-weight: normal;">Please pay the full amount when you arrive at the destination. </p>
+                </div>
+            </div>
+
+            <!-- SECURITY BADGE -->
+            <div class="security-badge">
+                <div class="icon">🔒</div>
+                <p>Your payment information is secure and encrypted</p>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" class="submit-btn" id="submitBtn">
+                ✅ Complete Payment
+            </button>
+
+            <a href="/Destinations/Index" class="back-btn">
+                ← Cancel & Go Back
+            </a>
+        </form>
+    </div>
+
+    <script>
+        // =============================
+        // VALIDATION FUNCTIONS
+        // =============================
+
+        // Validate Cardholder Name (letters and spaces only)
+        function validateCardHolderName(value) {
+            const regex = /^[A-Za-z\s]{3,50}$/;
+            return regex.test(value.trim());
+        }
+
+        // Validate Card Number (16 digits, supports spaces)
+        function validateCardNumber(value) {
+            const cleaned = value.replace(/\s/g, '');
+            const regex = /^\d{16}$/;
+            return regex.test(cleaned);
+        }
+
+        // Validate Expiry Date (MM/YY format and not expired)
+        function validateExpiryDate(value) {
+            const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+            if (!regex.test(value)) return false;
+
+            const [month, year] = value.split('/');
+            const expiry = new Date(2000 + parseInt(year), parseInt(month) - 1);
+            const now = new Date();
+            
+            return expiry > now;
+        }
+
+        // Validate CVV (3 digits)
+        function validateCVV(value) {
+            const regex = /^\d{3}$/;
+            return regex.test(value);
+        }
+
+        // Validate Pakistani Mobile Number (03XX-XXXXXXX)
+        function validateMobileNumber(value) {
+            const cleaned = value.replace(/[-\s]/g, '');
+            const regex = /^03\d{9}$/;
+            return regex.test(cleaned);
+        }
+
+        // Validate Wallet PIN (5 digits)
+        function validateWalletPin(value) {
+            const regex = /^\d{5}$/;
+            return regex.test(value);
+        }
+
+        // Validate Bank Account Number (10-20 digits)
+        function validateAccountNumber(value) {
+            const regex = /^\d{10,20}$/;
+            return regex.test(value);
+        }
+
+        // =============================
+        // REAL-TIME VALIDATION
+        // =============================
+
+        function setupValidation(inputId, validationFn, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+
+            if (!input) return;
+
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.classList.remove('valid', 'invalid');
+                    error.classList.remove('show');
+                    return;
+                }
+
+                if (validationFn(this.value)) {
+                    this.classList.add('valid');
+                    this.classList.remove('invalid');
+                    error.classList.remove('show');
+                } else {
+                    this.classList.add('invalid');
+                    this.classList.remove('valid');
+                    error.classList.add('show');
+                }
+            });
+
+            input.addEventListener('input', function() {
+                if (this.classList.contains('invalid')) {
+                    if (validationFn(this.value)) {
+                        this.classList.add('valid');
+                        this.classList.remove('invalid');
+                        error.classList.remove('show');
+                    }
+                }
+            });
+        }
+
+        // Setup all validations
+        setupValidation('cardHolderName', validateCardHolderName, 'cardHolderNameError');
+        setupValidation('cardNumber', validateCardNumber, 'cardNumberError');
+        setupValidation('expiryDate', validateExpiryDate, 'expiryDateError');
+        setupValidation('cvv', validateCVV, 'cvvError');
+        setupValidation('mobileNumber', validateMobileNumber, 'mobileNumberError');
+        setupValidation('walletPin', validateWalletPin, 'walletPinError');
+        setupValidation('accountNumber', validateAccountNumber, 'accountNumberError');
+
+        // Bank selection validation
+        const bankSelect = document.getElementById('bankName');
+        const bankError = document.getElementById('bankNameError');
+        if (bankSelect) {
+            bankSelect.addEventListener('change', function() {
+                if (this.value !== '') {
+                    this.classList.add('valid');
+                    this.classList.remove('invalid');
+                    bankError.classList.remove('show');
+                } else {
+                    this.classList.add('invalid');
+                    this.classList.remove('valid');
+                    bankError.classList.add('show');
+                }
+            });
+        }
+
+        // =============================
+        // SHOW/HIDE PAYMENT DETAILS
+        // =============================
+
+        document.querySelectorAll('input[name="PaymentMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Hide all details
+                document.querySelectorAll('.payment-details').forEach(detail => {
+                    detail.classList.remove('active');
+                });
+
+                // Clear all validation states
+                document.querySelectorAll('.form-control').forEach(input => {
+                    input.classList.remove('valid', 'invalid');
+                });
+                document.querySelectorAll('.error-message').forEach(error => {
+                    error.classList.remove('show');
+                });
+
+                // Show selected method details
+                if (this.value === 'Credit/Debit Card') {
+                    document.getElementById('cardDetails').classList.add('active');
+                } else if (this.value === 'JazzCash' || this.value === 'Easypaisa') {
+                    document.getElementById('walletDetails').classList.add('active');
+                } else if (this.value === 'Bank Transfer') {
+                    document.getElementById('bankDetails').classList.add('active');
+                } else if (this.value === 'Cash on Arrival') {
+                    document.getElementById('cashDetails').classList.add('active');
+                }
+            });
+        });
+
+        // =============================
+        // AUTO-FORMATTING
+        // =============================
+
+        // Card number formatting (add spaces every 4 digits)
+        const cardNumberInput = document.getElementById('cardNumber');
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue;
+            });
+        }
+
+        // Expiry date formatting (MM/YY)
+        const expiryInput = document.getElementById('expiryDate');
+        if (expiryInput) {
+            expiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                e.target.value = value;
+            });
+        }
+
+        // CVV (numbers only)
+        const cvvInput = document.getElementById('cvv');
+        if (cvvInput) {
+            cvvInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        }
+
+        // Mobile number formatting (03XX-XXXXXXX)
+        const mobileInput = document.getElementById('mobileNumber');
+        if (mobileInput) {
+            mobileInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 4) {
+                    value = value.substring(0, 4) + '-' + value.substring(4, 11);
+                }
+                e.target.value = value;
+            });
+        }
+
+        // Wallet PIN (numbers only)
+        const walletPinInput = document.getElementById('walletPin');
+        if (walletPinInput) {
+            walletPinInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        }
+
+        // Account number (numbers only)
+        const accountInput = document.getElementById('accountNumber');
+        if (accountInput) {
+            accountInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        }
+
+        // =============================
+        // FORM SUBMISSION VALIDATION
+        // =============================
+
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            const selectedMethod = document.querySelector('input[name="PaymentMethod"]:checked');
+            
+            if (!selectedMethod) {
+                e.preventDefault();
+                alert('Please select a payment method! ');
+                return;
+            }
+
+            let isValid = true;
+
+            // Validate based on selected method
+            if (selectedMethod.value === 'Credit/Debit Card') {
+                const cardHolder = document.getElementById('cardHolderName').value;
+                const cardNum = document.getElementById('cardNumber').value;
+                const expiry = document.getElementById('expiryDate').value;
+                const cvv = document.getElementById('cvv').value;
+
+                if (!validateCardHolderName(cardHolder)) {
+                    document.getElementById('cardHolderNameError').classList.add('show');
+                    document.getElementById('cardHolderName').classList.add('invalid');
+                    isValid = false;
+                }
+
+                if (!validateCardNumber(cardNum)) {
+                    document.getElementById('cardNumberError').classList.add('show');
+                    document.getElementById('cardNumber').classList.add('invalid');
+                    isValid = false;
+                }
+
+                if (!validateExpiryDate(expiry)) {
+                    document.getElementById('expiryDateError').classList.add('show');
+                    document.getElementById('expiryDate').classList.add('invalid');
+                    isValid = false;
+                }
+
+                if (!validateCVV(cvv)) {
+                    document.getElementById('cvvError').classList.add('show');
+                    document.getElementById('cvv').classList.add('invalid');
+                    isValid = false;
+                }
+
+            } else if (selectedMethod.value === 'JazzCash' || selectedMethod.value === 'Easypaisa') {
+                const mobile = document.getElementById('mobileNumber').value;
+                const pin = document.getElementById('walletPin').value;
+
+                if (!validateMobileNumber(mobile)) {
+                    document.getElementById('mobileNumberError').classList.add('show');
+                    document.getElementById('mobileNumber').classList.add('invalid');
+                    isValid = false;
+                }
+
+                if (!validateWalletPin(pin)) {
+                    document.getElementById('walletPinError').classList.add('show');
+                    document.getElementById('walletPin').classList.add('invalid');
+                    isValid = false;
+                }
+
+            } else if (selectedMethod.value === 'Bank Transfer') {
+                const bank = document.getElementById('bankName').value;
+                const account = document.getElementById('accountNumber').value;
+
+                if (bank === '') {
+                    document.getElementById('bankNameError').classList.add('show');
+                    document.getElementById('bankName').classList.add('invalid');
+                    isValid = false;
+                }
+
+                if (!validateAccountNumber(account)) {
+                    document.getElementById('accountNumberError').classList.add('show');
+                    document.getElementById('accountNumber').classList.add('invalid');
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fix all validation errors before submitting!');
+                return;
+            }
+
+            // Disable submit button to prevent double submission
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+        });
+    </script>
+</body>
+</html>

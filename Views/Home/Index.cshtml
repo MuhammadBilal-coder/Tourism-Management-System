@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #66a6ff;
+            margin: 0;
+        }
+        .welcome {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .btn {
+            padding: 20px 40px;
+            font-size: 18px;
+            background: white;
+            color: #66a6ff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #66a6ff;
+            color: white;
+        }
+        .logout {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .logout a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌍 Tourism Management System</h1>
+    </div>
+
+    <div class="welcome">
+        <h2>Welcome, @ViewBag.UserName! 👋</h2>
+        <p>Explore destinations and manage your bookings</p>
+    </div>
+
+    <div class="buttons">
+        <!-- ✅ FIXED MY BOOKINGS BUTTON -->
+        <a href="/Bookings/MyBookings" style="
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(102,126,234,0.5);
+        ">
+            📋 My Bookings
+        </a>
+
+        <a href="/Destinations/Index" class="btn">🗺️ Explore Destinations</a>
+    </div>
+
+    <div class="logout">
+        <a href="/Account/Logout">Logout</a>
+    </div>
+</body>
+</html>

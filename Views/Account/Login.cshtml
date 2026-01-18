@@ -1,0 +1,359 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 45px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @@keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo { text-align: center; margin-bottom: 10px; }
+        .logo i { font-size: 50px; color: #667eea; }
+
+        h1 {
+            text-align: center;
+            color: #1c1e21;
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #606770;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .success-banner {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @@keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-banner.show { display: block; }
+
+        .error-banner {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+            animation: shake 0.5s;
+        }
+
+        @@keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-banner.show { display: block; }
+
+        .form-group { margin-bottom: 20px; position: relative; }
+        .input-container { position: relative; }
+
+        input {
+            width: 100%;
+            padding: 14px 45px 14px 14px;
+            border: 1px solid #dddfe2;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #f5f6f7;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(102,126,234,0.1);
+        }
+
+        input.invalid {
+            border-color: #f02849;
+            background: #fff5f5;
+            animation: shake 0.3s;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            cursor: pointer;
+            color: #8a8d91;
+            transition: all 0.2s;
+        }
+
+        .input-icon:hover { color: #667eea; }
+
+        .forgot-link { text-align: right; margin-top: 8px; }
+
+        .forgot-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .forgot-link a:hover { text-decoration: underline; }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+        }
+
+        .btn-login:active { transform: scale(0.98); }
+
+        .btn-login .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @@keyframes spin { to { transform: rotate(360deg); } }
+
+        .btn-login.loading .btn-text { display: none; }
+        .btn-login.loading .spinner { display: block; }
+
+        .divider { text-align: center; margin: 25px 0; position: relative; }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: #dadde1;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #8a8d91;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .register-link { text-align: center; }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .register-link a:hover { text-decoration: underline; }
+
+        .features {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e4e6eb;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            color: #65676b;
+            font-size: 14px;
+        }
+
+        .feature-item i {
+            color: #667eea;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-mountain-sun"></i>
+        </div>
+
+        <h1>Welcome Back!</h1>
+        <p class="subtitle">Login to continue your journey</p>
+
+        <div class="success-banner" id="successBanner"></div>
+        <div class="error-banner" id="errorBanner"></div>
+
+        <form method="post" asp-action="Login" id="loginForm">
+            <div class="form-group">
+                <div class="input-container">
+                    <input type="email" id="email" name="email" placeholder="Email address" autocomplete="email" required />
+                    <span class="input-icon">
+                        <i class="far fa-envelope"></i>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required />
+                    <span class="input-icon" id="passwordIcon" onclick="togglePassword()">
+                        <i class="far fa-eye"></i>
+                    </span>
+                </div>
+
+                <div class="forgot-link">
+                    <a href="/Account/ForgotPassword">
+                        <i class="fas fa-lock"></i> Forgot password?
+                    </a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="submitBtn">
+                <span class="btn-text">Login</span>
+                <div class="spinner"></div>
+            </button>
+
+        </form>
+
+        <div class="divider">
+            <span>New to Tourism?</span>
+        </div>
+
+        <div class="register-link">
+            <a href="/Account/Register">Create new account</a>
+        </div>
+
+        <div class="features">
+            <div class="feature-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure & encrypted login</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-globe"></i>
+                <span>Explore amazing destinations</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-headset"></i>
+                <span>24/7 customer support</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function togglePassword() {
+            const icon = document.querySelector('#passwordIcon i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'far fa-eye';
+            }
+        }
+
+        // Email validation on blur (NOTE: @@ because cshtml)
+        emailInput.addEventListener('blur', function () {
+            const emailRegex = /^[^\\s@@]+@@[^\\s@@]+\\.[^\\s@@]+$/;
+            if (this.value && !emailRegex.test(this.value)) {
+                this.classList.add('invalid');
+            } else {
+                this.classList.remove('invalid');
+            }
+        });
+
+        // Form submission with loading
+        form.addEventListener('submit', function () {
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+        });
+
+        // Show success message if exists
+        const successMsg = '@(TempData["Success"] ?? "")';
+        if (successMsg) {
+            const successBanner = document.getElementById('successBanner');
+            successBanner.innerHTML = '<i class="fas fa-check-circle"></i> ' + successMsg;
+            successBanner.classList.add('show');
+        }
+
+        // Show error message if exists
+        const errorMsg = '@(ViewBag.Error ?? "")';
+        if (errorMsg) {
+            const errorBanner = document.getElementById('errorBanner');
+            errorBanner.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + errorMsg;
+            errorBanner.classList.add('show');
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>

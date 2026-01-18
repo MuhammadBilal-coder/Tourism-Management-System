@@ -1,0 +1,83 @@
+﻿@model List<TourismManagementSystem.Models. Destination>
+
+@{
+    ViewData["Title"] = "Destinations";
+}
+
+<!-- ✅ MY BOOKINGS FLOATING BUTTON -->
+<a href="/Bookings/MyBookings" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration:  none;
+    border-radius:  50px;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 8px 25px rgba(102,126,234,0.6);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+">
+    📋 My Bookings
+</a>
+
+<style>
+    a[href="/Bookings/MyBookings"]:hover {
+        transform: translateY(-3px);
+        box-shadow:  0 12px 35px rgba(102,126,234,0.8);
+    }
+</style>
+
+<h1 class="mb-4">Destinations</h1>
+
+@if (Model == null || Model. Count == 0)
+{
+    <p>No destinations found. </p>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var dest in Model)
+        {
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm" style="border-radius:14px; overflow:hidden;">
+                    
+                    <img class="card-img-top"
+                         style="height:170px; object-fit:cover;"
+                         src="@(string.IsNullOrWhiteSpace(dest.ImagePath) 
+                                ? "/images/fairy. jpg" 
+                                : (dest.ImagePath.StartsWith("/") ? dest.ImagePath : "/" + dest.ImagePath))"
+                         alt="@dest.Name" />
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@dest.Name</h5>
+
+                        <p class="card-text mb-1"><b>Location:</b> @dest.Location</p>
+
+                        @if (!string.IsNullOrWhiteSpace(dest.Description))
+                        {
+                            <p class="card-text text-muted" style="font-size: 0.95rem;">
+                                @dest.Description
+                            </p>
+                        }
+
+                        <div class="mt-auto">
+                            <a class="btn btn-primary w-100"
+                               asp-controller="Packages"
+                               asp-action="BookPackage"
+                               asp-route-destinationId="@dest.DestinationId">
+                                View Packages
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+}
